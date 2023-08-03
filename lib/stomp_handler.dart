@@ -181,7 +181,23 @@ class StompHandler {
     config.onDebugMessage('>>> $serializedFrame');
 
     try {
-      _channel!.sink.add(serializedFrame);
+      if (config.useSockJS) {
+        var strFrame = serializedFrame as String;
+        int chunkCount =
+            (serializedFrame.length / config.maxSockJSFrameSize).ceil();
+        var chunks = List.generate(
+            chunkCount,
+            (i) =>
+                (i > 0 ? '["' : '') +
+                strFrame.substring(i * config.maxSockJSFrameSize,
+                    min((i + 1) * config.maxSockJSFrameSize, strFrame.length)) +
+                (i < chunkCount - 1 ? '"]' : ''));
+        for (var chunk in chunks) {
+          _channel!.sink.add(chunk);
+        }
+      } else {
+        _channel!.sink.add(serializedFrame);
+      }
     } catch (_) {
       throw StompBadStateException(
         'The StompHandler has no active connection '

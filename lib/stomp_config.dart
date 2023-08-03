@@ -16,6 +16,9 @@ class StompConfig {
   /// Whether to use SockJS
   final bool useSockJS;
 
+  /// SockJS maximum frame size in characters
+  final int maxSockJSFrameSize;
+
   /// Time between reconnect attempts
   /// Set to a duration with 0 milliseconds if you don't want to reconnect
   /// automatically
@@ -70,6 +73,8 @@ class StompConfig {
   /// Callback for debug messages
   final StompDebugCallback onDebugMessage;
 
+  static const int _defaultMaxSockJSFrameSize = 15000;
+
   const StompConfig({
     required this.url,
     this.reconnectDelay = const Duration(seconds: 5),
@@ -89,6 +94,7 @@ class StompConfig {
     this.onWebSocketDone = _noOp,
     this.onDebugMessage = _noOp,
     this.useSockJS = false,
+    this.maxSockJSFrameSize = _defaultMaxSockJSFrameSize,
   });
 
   StompConfig.sockJS({
@@ -109,6 +115,7 @@ class StompConfig {
     this.onWebSocketError = _noOp,
     this.onWebSocketDone = _noOp,
     this.onDebugMessage = _noOp,
+    this.maxSockJSFrameSize = _defaultMaxSockJSFrameSize,
   })  : useSockJS = true,
         url = SockJsUtils().generateTransportUrl(url);
 
@@ -132,6 +139,7 @@ class StompConfig {
     this.onWebSocketError = _noOp,
     this.onWebSocketDone = _noOp,
     this.onDebugMessage = _noOp,
+    this.maxSockJSFrameSize = _defaultMaxSockJSFrameSize,
   })  : useSockJS = true,
         url = SockJsUtils().generateTransportUrl(url);
 
@@ -154,6 +162,7 @@ class StompConfig {
     StompWebSocketErrorCallback? onWebSocketError,
     StompWebSocketDoneCallback? onWebSocketDone,
     StompDebugCallback? onDebugMessage,
+    int? maxSockJSFrameSize,
   }) {
     return StompConfig(
       url: url ?? this.url,
@@ -175,6 +184,7 @@ class StompConfig {
       onWebSocketError: onWebSocketError ?? this.onWebSocketError,
       onWebSocketDone: onWebSocketDone ?? this.onWebSocketDone,
       onDebugMessage: onDebugMessage ?? this.onDebugMessage,
+      maxSockJSFrameSize: maxSockJSFrameSize ?? this.maxSockJSFrameSize,
     );
   }
 
